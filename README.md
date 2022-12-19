@@ -6,7 +6,7 @@
 
 ## Deployment and Documentation
 [Deployed Server on Render]()
-![Whiteboard]()
+![Whiteboard](./UML.png)
 
 ## Overview
 Doctor's Office Service Desk - This system simulates a doctor's office service desk where doctors can schedule appointments with patients, alert the doctor when the patient is ready to be seen, and receive a notification when they've completed the appointment.
