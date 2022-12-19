@@ -7,12 +7,12 @@ const Queue = require('./lib/queue');
 const server = new Server(PORT);
 console.log('listening on port', PORT);
 
-const caps = server.of('/caps');
+const doctorsoffice = server.of('/doctorsoffice');
 const messageQueue = new Queue();
 
-caps.on('connection', (socket) => {
+doctorsoffice.on('connection', (socket) => {
     console.log('Socket connected to event server', socket.id);
-    console.log('Socket connected to caps namespace', socket.id);
+    console.log('Socket connected to doctorsoffice namespace', socket.id);
 
 
     socket.on('ENTER SERVICE DESK', (queueId) => {
@@ -26,7 +26,7 @@ caps.on('connection', (socket) => {
         socket.emit('ENTER SERVICE DESK', queueId);
     });
     
-    socket.on('APPOINTMENT', (payload) => {
+    socket.on('APPOINTMENT SCHEDULED', (payload) => {
         console.log('APPOINTMENT SCHEDULED event', payload);
         let currentQueue = messageQueue.read(payload.queueId);
         if(!currentQueue){
@@ -38,23 +38,23 @@ caps.on('connection', (socket) => {
     });
 
     socket.on('PATIENT IS READY', (payload) => {
-        caps.emit('PATIENT IS READY', payload);
+        doctorsoffice.emit('PATIENT IS READY', payload);
     });
 
     socket.on('APPOINTMENT COMPLETE', (payload) => {
         let currentQueue = messageQueue.read(payload.queueId);
         if(!currentQueue){
-            let queueKey = messageQueue.store(payalod.queueId, new Queue());
+            let queueKey = messageQueue.store(payload.queueId, new Queue());
             currentQueue = messageQueue.read(queueKey);
         }
         currentQueue.store(payload.messageId, payload);
-        caps.emit('APPOINTMENT COMPLETE', payload);
+        doctorsoffice.emit('APPOINTMENT COMPLETE', payload);
     });
 
     // is this recieving a message? How to we relate this to the doctor's office?
 
     socket.on('RECEIVED', (payload) => {
-        console.log('Server RECEIVED event', payload);
+        console.log('RECEIVED event', payload);
         let currentQueue = messageQueue.read(payload.queueId);
         if(!currentQueue){
             throw new Error('no queue created');
@@ -70,7 +70,7 @@ caps.on('connection', (socket) => {
         let currentQueue = messageQueue.read(payload.queueId);
         if(currentQueue && currentQueue.data){
             Object.keys(currentQueue.data).forEach(messageId => {
-                caps.emit('DELIVERED', currentQueue.read(messageId));
+                doctorsoffice.emit('DELIVERED', currentQueue.read(messageId));
             });
         }
     })

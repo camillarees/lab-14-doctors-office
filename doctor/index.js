@@ -4,7 +4,7 @@ const { io } = require('socket.io-client');
 const Chance = require('chance');
 const MessageClient = require('../lib/messageClient');
 
-const socket = io('http://localhost:3002/caps');
+const socket = io('http://localhost:3002/doctorsoffice');
 const chance = new Chance();
 
 const doctorFlores = new MessageClient('Doctor Flores');
@@ -30,7 +30,6 @@ setInterval(() => {
 
     console.log('-------------new appointment scheduled--------------', payload);
     doctorFlores.publish('APPOINTMENT SCHEDULED', payload);
-
 }, 7000);
 
 doctorGrey.subscribe('PATIENT IS READY', (payload) => {
@@ -51,5 +50,5 @@ setInterval(() => {
     }
 
     console.log('------------new appointment scheduled------------', payload);
-doctorGrey.publish('APPOINTMENT SCHEDULED', payload);
+    doctorGrey.publish('APPOINTMENT SCHEDULED', payload);
 }, 7000);
